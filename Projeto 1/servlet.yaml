@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  tomcat:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./app:/usr/local/tomcat/webapps/app
+    depends_on:
+      - db
+
+  db:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: psweb
+      MYSQL_DATABASE: testdb
+    ports:
+      - "3306:3306"
