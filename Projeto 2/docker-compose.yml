@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+
+  db:
+    image: mysql:8
+    container_name: mysql_universidade
+    restart: always
+
+    environment:
+      MYSQL_ROOT_PASSWORD: roote
+      MYSQL_DATABASE: universidade
+      MYSQL_USER: user
+      MYSQL_PASSWORD: User@123
+
+    ports:
+      - "3306:3306"
+
+    volumes:
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  tomcat:
+    image: tomcat:10
+    container_name: tomcat_app
+
+    ports:
+      - "8080:8080"
+
+    volumes:
+      - ./app:/usr/local/tomcat/webapps
+
+    depends_on:
+      - db
