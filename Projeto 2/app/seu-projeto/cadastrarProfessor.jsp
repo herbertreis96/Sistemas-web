@@ -5,15 +5,11 @@
 request.setCharacterEncoding("UTF-8");
 %>
 
-<%@ page import="java.util.List" %>
-<%@ page import="model.Disciplina" %>
-<%@ page import="dao.DisciplinaDAO" %>
-
 <html>
 
 <head>
 
-    <title>Lista Disciplinas</title>
+    <title>Cadastrar Professor</title>
 
     <style>
 
@@ -22,22 +18,13 @@ request.setCharacterEncoding("UTF-8");
             margin: 40px;
         }
 
-        table{
-            border-collapse: collapse;
-            width: 100%;
+        input{
+            width: 300px;
+            padding: 8px;
         }
 
-        th, td{
-            padding: 10px;
-            border: 1px solid #ccc;
-        }
-
-        th{
-            background-color: #f2f2f2;
-        }
-
-        a{
-            text-decoration: none;
+        input[type=submit]{
+            width: 150px;
         }
 
     </style>
@@ -52,66 +39,46 @@ request.setCharacterEncoding("UTF-8");
 
 <hr>
 
-<h1>Disciplinas Cadastradas</h1>
+<h1>Cadastrar Professor</h1>
 
-<a href="cadastrarDisciplina.jsp">
-    Nova Disciplina
-</a>
+<form action="salvarProfessor.jsp" method="post">
 
-<br><br>
+    Matrícula:
+    <br>
+    <input
+        type="text"
+        name="matricula"
+        required>
+    <br><br>
 
-<table>
+    Nome:
+    <br>
+    <input
+        type="text"
+        name="nome"
+        required>
+    <br><br>
 
-<tr>
-    <th>ID</th>
-    <th>Código</th>
-    <th>Nome</th>
-    <th>Carga Horária</th>
-    <th>Ações</th>
-</tr>
+    Email:
+    <br>
+    <input
+        type="email"
+        name="email">
+    <br><br>
 
-<%
+    Telefone:
+    <br>
+    <input
+        type="text"
+        name="telefone">
+    <br><br>
 
-    DisciplinaDAO dao =
-            new DisciplinaDAO();
+    <input
+        type="submit"
+        value="Salvar">
 
-    List<Disciplina> lista =
-            dao.listar();
-
-    for(Disciplina d : lista) {
-%>
-
-<tr>
-
-    <td><%= d.getId() %></td>
-
-    <td><%= d.getCodigo() %></td>
-
-    <td><%= d.getNome() %></td>
-
-    <td><%= d.getCargaHoraria() %></td>
-
-    <td>
-
-        <a href="editarDisciplina.jsp?id=<%= d.getId() %>">
-            Editar
-        </a>
-
-        |
-
-        <a href="excluirDisciplina.jsp?id=<%= d.getId() %>">
-            Excluir
-        </a>
-
-    </td>
-
-</tr>
-
-<%
-    }
-%>
-
-</table>
+</form>
 
 </body>
+
 </html>

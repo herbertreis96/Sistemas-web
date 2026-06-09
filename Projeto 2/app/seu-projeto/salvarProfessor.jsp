@@ -2,37 +2,39 @@
          pageEncoding="UTF-8"%>
 
 <%
-    request.setCharacterEncoding("UTF-8");
+request.setCharacterEncoding("UTF-8");
 %>
 
 <%@ page import="model.Professor" %>
 <%@ page import="dao.ProfessorDAO" %>
 
 <%
-    String matricula =
-            request.getParameter("matricula");
 
-    String nome =
-            request.getParameter("nome");
+String matricula =
+        request.getParameter("matricula");
 
-    String email =
-            request.getParameter("email");
+String nome =
+        request.getParameter("nome");
 
-    String telefone =
-            request.getParameter("telefone");
+String email =
+        request.getParameter("email");
 
-    Professor professor =
-            new Professor();
+String telefone =
+        request.getParameter("telefone");
 
-    professor.setMatricula(matricula);
-    professor.setNome(nome);
-    professor.setEmail(email);
-    professor.setTelefone(telefone);
+Professor professor =
+        new Professor();
 
-    ProfessorDAO dao =
-            new ProfessorDAO();
+professor.setMatricula(matricula);
+professor.setNome(nome);
+professor.setEmail(email);
+professor.setTelefone(telefone);
 
-    dao.salvar(professor);
+ProfessorDAO dao =
+        new ProfessorDAO();
 
-    response.sendRedirect("listar.jsp");
+dao.salvar(professor);
+
+response.sendRedirect("listar.jsp");
+
 %>

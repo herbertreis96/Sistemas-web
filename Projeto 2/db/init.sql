@@ -5,6 +5,7 @@ CHARACTER SET utf8mb4
 COLLATE utf8mb4_unicode_ci;
 
 USE universidade;
+
 -- =========================================
 -- TABELA PROFESSOR
 -- =========================================
@@ -97,11 +98,8 @@ CREATE TABLE turma (
 INSERT INTO professor
 (matricula, nome, email, telefone)
 VALUES
-
 ('P001', 'Joao Silva', 'joao@uni.com', '99999-1111'),
-
 ('P002', 'Maria Souza', 'maria@uni.com', '99999-2222'),
-
 ('P003', 'Carlos Lima', 'carlos@uni.com', '99999-3333');
 
 -- =========================================
@@ -110,11 +108,8 @@ VALUES
 INSERT INTO disciplina
 (codigo, nome, carga_horaria)
 VALUES
-
 ('BD01', 'Banco de Dados', 60),
-
 ('SO01', 'Sistemas Operacionais', 60),
-
 ('RED01', 'Redes de Computadores', 60);
 
 -- =========================================
@@ -123,17 +118,11 @@ VALUES
 INSERT INTO professor_disciplina
 (professor_id, disciplina_id)
 VALUES
-
 (1,1), -- João -> Banco de Dados
-
-(1,2), -- João -> POO
-
-(2,2), -- Maria -> POO
-
+(1,2), -- João -> Sistemas Operacionais
+(2,2), -- Maria -> Sistemas Operacionais
 (2,3), -- Maria -> Redes
-
 (3,1), -- Carlos -> Banco de Dados
-
 (3,3); -- Carlos -> Redes
 
 -- =========================================
@@ -149,16 +138,23 @@ INSERT INTO turma
 VALUES
 
 ('T001', 1,1,'2024.1',40,'noite'),
-
 ('T002', 1,2,'2024.2',35,'manha'),
 
 ('T003', 2,2,'2024.1',30,'tarde'),
-
 ('T004', 2,3,'2024.2',25,'noite'),
 
 ('T005', 3,1,'2024.2',45,'manha'),
+('T006', 3,3,'2025.1',50,'noite'),
 
-('T006', 3,3,'2025.1',50,'noite');
+-- Novas turmas para demonstrar carga horária acumulada
+('T007', 1,1,'2025.1',42,'noite'),
+('T008', 1,2,'2025.2',38,'manha'),
+
+('T009', 2,2,'2025.1',32,'tarde'),
+('T010', 2,3,'2025.2',28,'noite'),
+
+('T011', 3,1,'2025.2',40,'manha'),
+('T012', 3,3,'2026.1',48,'noite');
 
 -- =========================================
 -- CONSULTA:
@@ -168,14 +164,12 @@ VALUES
 SELECT
     p.nome AS professor,
     d.nome AS disciplina
-
 FROM professor p
-
 JOIN professor_disciplina pd
-ON p.id = pd.professor_id
-
+    ON p.id = pd.professor_id
 JOIN disciplina d
-ON d.id = pd.disciplina_id;
+    ON d.id = pd.disciplina_id
+ORDER BY p.nome;
 
 -- =========================================
 -- CONSULTA:
@@ -183,22 +177,76 @@ ON d.id = pd.disciplina_id;
 -- POR UM PROFESSOR
 -- =========================================
 SELECT
-
     p.nome AS professor,
-
     d.nome AS disciplina,
-
     SUM(d.carga_horaria) AS carga_total,
-
     SUM(t.numero_alunos) AS total_alunos
+FROM turma t
+JOIN professor p
+    ON p.id = t.professor_id
+JOIN disciplina d
+    ON d.id = t.disciplina_id
+GROUP BY p.nome, d.nome
+ORDER BY p.nome;
+
+-- =========================================
+-- CONSULTA:
+-- HISTÓRICO COMPLETO DE TURMAS
+-- =========================================
+SELECT
+    p.nome AS professor,
+    t.semestre,
+    t.codigo_turma,
+    d.nome AS disciplina,
+    d.carga_horaria,
+    t.numero_alunos,
+    t.horario
+FROM turma t
+JOIN professor p
+    ON p.id = t.professor_id
+JOIN disciplina d
+    ON d.id = t.disciplina_id
+ORDER BY p.nome, t.semestre;
+
+-- =========================================
+-- CONSULTA:
+-- CARGA HORÁRIA ACUMULADA
+-- POR PROFESSOR AO LONGO DOS SEMESTRES
+-- =========================================
+SELECT
+    p.nome AS professor,
+    t.semestre,
+    t.codigo_turma,
+    d.nome AS disciplina,
+    d.carga_horaria,
+
+    SUM(d.carga_horaria)
+    OVER(
+        PARTITION BY p.id
+        ORDER BY t.semestre, t.codigo_turma
+    ) AS carga_horaria_acumulada
 
 FROM turma t
-
 JOIN professor p
-ON p.id = t.professor_id
-
+    ON p.id = t.professor_id
 JOIN disciplina d
-ON d.id = t.disciplina_id
+    ON d.id = t.disciplina_id
 
-GROUP BY p.nome, d.nome;
-```
+ORDER BY p.nome, t.semestre;
+
+-- =========================================
+-- CONSULTA:
+-- RESUMO FINAL POR PROFESSOR
+-- =========================================
+SELECT
+    p.nome AS professor,
+    COUNT(t.id) AS quantidade_turmas,
+    SUM(d.carga_horaria) AS carga_horaria_total,
+    SUM(t.numero_alunos) AS total_alunos
+FROM turma t
+JOIN professor p
+    ON p.id = t.professor_id
+JOIN disciplina d
+    ON d.id = t.disciplina_id
+GROUP BY p.id, p.nome
+ORDER BY carga_horaria_total DESC;
